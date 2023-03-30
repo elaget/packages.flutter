@@ -252,6 +252,45 @@ class PdfControllerPinch extends TransformationController
     );
   }
 
+  PdfPoint calculatePdfPointForScreenPoint({required Offset screenPoint}) {
+    final pdfState = _state!;
+
+    double zoomPadding = pdfState._padding * zoomRatio;
+    double scrollPageTop =
+        zoomPadding; // distance in pixels from start of scrollview to the top of my first page
+    int currentPage = 0;
+    bool found = false;
+    double scrollPointTouch = viewRect.top +
+        screenPoint
+            .dy; // distance in pixel from start of scrollview to the clicked point
+    while (!found && scrollPageTop < scrollPointTouch) {
+      final pageRect = pdfState._pages[currentPage].rect!;
+      var topNextPage = scrollPageTop;
+      topNextPage += pageRect.height * zoomRatio;
+      topNextPage += zoomPadding;
+      if (topNextPage > scrollPointTouch) {
+        // we are inside current page
+        found = true;
+      } else {
+        // the clicked point is below the top of the next page. keep looping
+        scrollPageTop = topNextPage;
+        currentPage += 1;
+      }
+    }
+    final pageState = pdfState._pages[currentPage];
+    final scrollX = viewRect.left - zoomPadding;
+    final pointX = screenPoint.dx + scrollX;
+    final pointY = scrollPointTouch - scrollPageTop;
+    final rect = pageState.rect!;
+    final pageSize = pageState.pageSize;
+    final zoomPdfHeight = rect.height * zoomRatio;
+    final zoomPdfWidth = rect.width * zoomRatio;
+    // result pixels to drawn in the pdf
+    final x = (pointX * pageSize.width) / zoomPdfWidth;
+    final y = (pointY * pageSize.height) / zoomPdfHeight;
+    return PdfPoint(Offset(x, y), currentPage);
+  }
+
   void _detach() {
     _state = null;
   }

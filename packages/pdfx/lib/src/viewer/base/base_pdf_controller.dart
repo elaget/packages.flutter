@@ -13,3 +13,9 @@ enum PdfLoadingState {
   error,
   success,
 }
+
+class PdfPoint {
+  Offset offset;
+  int page;
+  PdfPoint(this.offset, this.page);
+}
