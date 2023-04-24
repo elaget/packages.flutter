@@ -16,6 +16,12 @@ enum PdfLoadingState {
 
 class PdfPoint {
   Offset offset;
+  PdfxPage pdfPage;
+  PdfPoint(this.offset, this.pdfPage);
+}
+
+class PdfxPage {
+  Size size;
   int page;
-  PdfPoint(this.offset, this.page);
+  PdfxPage(this.size, this.page);
 }

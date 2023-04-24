@@ -288,7 +288,7 @@ class PdfControllerPinch extends TransformationController
     // result pixels to drawn in the pdf
     final x = (pointX * pageSize.width) / zoomPdfWidth;
     final y = (pointY * pageSize.height) / zoomPdfHeight;
-    return PdfPoint(Offset(x, y), currentPage);
+    return PdfPoint(Offset(x, y), PdfxPage(pageSize, currentPage));
   }
 
   void _detach() {
